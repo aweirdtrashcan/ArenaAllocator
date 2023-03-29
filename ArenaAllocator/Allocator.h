@@ -43,10 +43,8 @@ public:
 
 	/*
 		insert the templated object in the array
-		if the array is already full, get back to index 0
-		destroy what's in there and place the new object at location
 	*/
-	void Insert(T* _obj_insert)
+	__forceinline void Insert(T* _obj_insert)
 	{
 		assert(!(_curr_size > (_mem_size / sizeof(T))) && "Trying to add more elements but the buffer array is already full\n");
 		assert(_mem_block != nullptr && "Trying to add an object in a NULL buffer.\n");
@@ -109,17 +107,6 @@ public:
 	}
 
 	/*
-		created an object just for testing...
-		have no idea how should one pass custom args
-		==cries in dumb c++==
-	*/
-	void CreateObject()
-	{
-		T* _new_object = new T(30.f, 12.f, 14.f, 12.f);
-		Insert(_new_object);
-	}
-
-	/*
 		This function takes care to delete
 		whatever was in the first slot and add
 		a new object
@@ -132,11 +119,39 @@ public:
 	}
 
 public:
+
+	/* Overloads for CreateObject() function */
+	
+	template<class A1>
+	__forceinline void CreateObject(T*(_func_arg1)(A1), A1 arg)
+	{
+		Insert(_func_arg1(arg));
+	}
+
+	template<class A1, class A2>
+	__forceinline void CreateObject(T*(_func_arg2)(A1, A2), A1 arg1, A2 arg2)
+	{
+		Insert(_func_arg2(arg1, arg2));
+	}
+
+	template<class A1, class A2, class A3>
+	__forceinline void CreateObject(T* (_func_arg3)(A1, A2, A3), A1 arg1, A2 arg2, A3 arg3)
+	{
+		Insert(_func_arg3(arg1, arg2, arg3));
+	}
+
+	template<class A1, class A2, class A3, class A4>
+	__forceinline void CreateObject(T* (_func_arg4)(A1, A2, A3, A4), A1 arg1, A2 arg2, A3 arg3, A4 arg4)
+	{
+		Insert(_func_arg4(arg1, arg2, arg3, arg4));
+	}
+
+public:
 	/*
 		Just get the pointer at some index in case you
 		want to...
 	*/
-	inline T* GetPointerAtIndex(size_t index) const
+	__forceinline T* GetPointerAtIndex(size_t index) const
 	{
 		return _mem_block[index];
 	}
@@ -146,7 +161,7 @@ public:
 		to your data. Potentially easy to break the whole 
 		code with this.
 	*/
-	inline T** GetRawPointer() const
+	__forceinline T** GetRawPointer() const
 	{
 		return _mem_block;
 	}
@@ -154,7 +169,7 @@ public:
 	/*
 		the name already tell
 	*/
-	inline T* GetLastObjectAdded() const
+	__forceinline T* GetLastObjectAdded() const
 	{
 		return _mem_block[_curr_size - 1];
 	}
@@ -162,7 +177,7 @@ public:
 	/*
 		Might be userful huh
 	*/
-	inline const size_t GetBufferSize() const
+	__forceinline const size_t GetBufferSize() const
 	{
 		return _mem_size;
 	}
