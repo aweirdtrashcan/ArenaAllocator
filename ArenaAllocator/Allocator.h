@@ -34,9 +34,7 @@ public:
 	}
 
 	/* 
-		calling the destructor (and begging you actually got a destructor)
-		and then setting the pointer to nullptr just to make sure it's gone
-		(((i have no ideia if this is a memory leak or not)))
+		just frees all of the memory in the array pointer
 	*/
 	~Allocator()
 	{
@@ -71,6 +69,10 @@ public:
 			_mem_block[index] = _obj_insert;
 		}
 	}
+
+	/*
+		Just deletes everything =)
+	*/
 
 	void DeleteAllObjects()
 	{
