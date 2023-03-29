@@ -13,9 +13,9 @@ struct Testing
 
 int main()
 {
-	Allocator<Testing>alloc(120000 * sizeof(Testing));
+	Allocator<Testing>alloc(40000 * sizeof(Testing));
 
-	for (size_t i = 0; i <= 120000; i++)
+	for (size_t i = 0; i <= 40000; i++)
 	{
 		alloc.CreateObject();
 		
@@ -26,7 +26,26 @@ int main()
 
 	std::cout << "size of alloc " << sizeof(alloc) << std::endl;
 
-	alloc.DeleteAllObjects();
+	alloc.DeleteAllObjectsAndBuffer();
+
+	bool successful = alloc.CreateBufferWithSize(40000 * sizeof(Testing));
+
+	if (!successful)
+	{
+		std::cout << "Error creating new buffer\n";
+		return 0;
+	}
+
+	for (size_t i = 0; i <= 40000; i++)
+	{
+		alloc.CreateObject();
+
+		Testing* obj = alloc.GetLastObjectAdded();
+		obj->a = (float)i;
+		std::cout << obj->a << std::endl;
+	}
+
+	alloc.~Allocator();
 
 	std::cin.get();
 

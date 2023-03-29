@@ -38,10 +38,7 @@ public:
 	*/
 	~Allocator()
 	{
-		for (size_t i = 0; i < _mem_size / sizeof(T); i++)
-		{
-			free(_mem_block[i]);
-		}
+		DeleteAllObjectsAndBuffer();
 	}
 
 	/*
@@ -52,22 +49,13 @@ public:
 	void Insert(T* _obj_insert)
 	{
 		assert(!(_curr_size > (_mem_size / sizeof(T))) && "Trying to add more elements but the buffer array is already full\n");
+		assert(_mem_block != nullptr && "Trying to add an object in a NULL buffer.\n");
 
 		_mem_block[_curr_size] = _obj_insert;
 		_curr_size = _curr_size + 1;
 #ifdef _DEBUG
 		std::cout << "curr size is now " << _curr_size << std::endl;
 #endif
-	}
-
-	void InsertAtLocation(T* _obj_insert, size_t index)
-	{
-		if (_mem_block[index] != nullptr)
-		{
-			_mem_block[index]->~T();
-			_mem_block[index] = nullptr;
-			_mem_block[index] = _obj_insert;
-		}
 	}
 
 	/*
@@ -80,6 +68,44 @@ public:
 		{
 			free(_mem_block[i]);
 		}
+		_curr_size = 0;
+	}
+
+	/*
+		Create a new buffer and returns true if 
+		creation was successful
+	*/
+
+	bool CreateBufferWithSize(size_t buffer_size)
+	{
+		//assert(_mem_block == nullptr && "Trying to create a buffer, but a buffer already exists.");
+	
+		if (_mem_block == nullptr)
+		{
+			_mem_block = (T**)malloc(buffer_size);
+			_curr_size = 0;
+			_mem_size = buffer_size;
+		}
+
+		return _mem_block != nullptr;
+	}
+
+	/*
+		WARNING: This will delete all the objects and the buffer!!!
+		if you want to continue to use this class, make sure you call
+		CreateBufferWithSize()
+	*/
+
+	void DeleteAllObjectsAndBuffer()
+	{
+		for (size_t i = 0; i < _mem_size / sizeof(T); i++)
+		{
+			free(_mem_block[i]);
+		}
+		free(_mem_block);
+		_mem_block = nullptr;
+		_curr_size = 0;
+		_mem_size = 0;
 	}
 
 	/*
@@ -100,8 +126,7 @@ public:
 	*/
 	void force_insert_at_beginning(T* _obj)
 	{
-		_mem_block[0]->~T();
-		_mem_block[0] = nullptr;
+		free(_mem_block[0]);
 		_mem_block[0] = _obj;
 	}
 
