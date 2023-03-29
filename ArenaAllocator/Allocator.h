@@ -64,8 +64,7 @@ public:
 	{
 		if (_mem_block[index] != nullptr)
 		{
-			_mem_block[index]->~T();
-			_mem_block[index] = nullptr;
+			free(_mem_block[index]);
 			_mem_block[index] = _obj_insert;
 		}
 	}
@@ -80,6 +79,7 @@ public:
 		{
 			free(_mem_block[i]);
 		}
+		_curr_size = 0;
 	}
 
 	/*
@@ -100,8 +100,7 @@ public:
 	*/
 	void force_insert_at_beginning(T* _obj)
 	{
-		_mem_block[0]->~T();
-		_mem_block[0] = nullptr;
+		free(_mem_block[0]);
 		_mem_block[0] = _obj;
 	}
 
