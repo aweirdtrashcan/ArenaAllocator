@@ -127,6 +127,7 @@ public:
 	void force_insert_at_beginning(T* _obj)
 	{
 		free(_mem_block[0]);
+		_mem_block[0] = nullptr;
 		_mem_block[0] = _obj;
 	}
 
